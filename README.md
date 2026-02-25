@@ -12,13 +12,13 @@ experience.
 ## ✨ Concept
 
 Kiki is designed as a modern tech accessories brand with a clear
-identity.\
+identity.
 The focus goes beyond visuals and explores the integration between:
 
--   Interface design\
--   User experience\
--   Ecommerce architecture\
--   Payment gateway integration\
+-   Interface design
+-   User experience
+-   Ecommerce architecture
+-   Payment gateway integration
 -   Product presentation
 
 The aesthetic is soft and contemporary, while the positioning remains
@@ -39,27 +39,29 @@ professional and intentional.
 
 ## 🛍️ Features
 
--   Home page with hero section\
--   Featured products section\
--   Product categories\
+-   Home page with hero section
+-   Featured products section
+-   Product categories
 -   Product cards including:
-    -   Image\
-    -   Price\
-    -   Variants\
-    -   Labels (New, Limited, Offers)\
--   Shopping cart\
--   Cart item counter\
--   Structured footer\
+    -   Image
+    -   Price
+    -   Variants
+    -   Labels (New, Limited, Offers)
+-   Shopping cart
+-   Cart item counter
+-   Structured footer
 -   Responsive design
 
 ------------------------------------------------------------------------
 
 ## 🧩 Technologies Used
 
--   HTML5\
--   CSS3\
--   JavaScript\
--   Mercado Pago API (integration in progress)\
+-   React
+-   Node.js
+-   Typescript
+-   Tailwind
+-   Mercado Pago API (integration in progress)
+-   Google OAUTH para Log-In de usuario
 -   AI-generated product images
 
 ------------------------------------------------------------------------
@@ -68,11 +70,11 @@ professional and intentional.
 
 The design prioritizes:
 
--   Minimalism\
--   Clean spacing\
--   Soft color palette\
--   Clear typographic hierarchy\
--   Reusable components\
+-   Minimalism
+-   Clean spacing
+-   Soft color palette
+-   Clear typographic hierarchy
+-   Reusable components
 -   Visual consistency
 
 The goal was to avoid an overly decorative or childish aesthetic,
@@ -84,9 +86,9 @@ focusing instead on a curated and contemporary brand feel.
 
 The project includes planned integration with Mercado Pago API for:
 
--   Payment preference creation\
--   Secure checkout redirection\
--   Payment status handling\
+-   Payment preference creation
+-   Secure checkout redirection
+-   Payment status handling
 -   Post-payment confirmation
 
 This integration is part of the technical learning process for
@@ -100,26 +102,26 @@ Currently in active development.
 
 Focus areas:
 
--   Copy refinement\
--   Visual improvements\
--   Realistic product imagery\
+-   Copy refinement
+-   Visual improvements
+-   Realistic product imagery
 -   Backend preparation
 
 ------------------------------------------------------------------------
 
 ## 🚀 Next Steps
 
--   Full backend implementation\
--   Database integration\
--   Complete Mercado Pago integration\
--   Performance optimization\
--   User authentication\
+-   Full backend implementation
+-   Database integration
+-   Complete Mercado Pago integration
+-   Performance optimization
+-   User authentication
 -   Wishlist functionality
 
 ------------------------------------------------------------------------
 
 ## 👩🏻‍💻 Author
 
-Developed by Khiara Razzolini\
+Developed by Khiara Razzolini
 Programming student focused on backend development and system
 architecture.
