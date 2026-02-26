@@ -4,9 +4,10 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { GoogleOAuthProvider } from "@react-oauth/google";
-import { CartProvider } from "./context/CartContext";
+import { CartProvider } from "./context/cartContext";
 import { AuthProvider } from "./context/authContext";
 import ScrollToTop from "./components/ScrollToTop";
+import Perfil from "./pages/Perfil";
 
 import Index from "./pages/Index";
 import Tienda from "./pages/Tienda";
@@ -39,7 +40,7 @@ const App = () => (
                 <Route path="/colecciones" element={<Colecciones />} />
                 <Route path="/colecciones/:id" element={<Coleccion />} />
                 <Route path="/favoritos" element={<Favoritos />} />
-
+                <Route path="/perfil" element={<Perfil />} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>

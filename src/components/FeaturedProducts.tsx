@@ -165,7 +165,7 @@ const FeaturedProducts = () => {
 
             {/* Bottom promo banner → Sakura Set Collection */}
             <Link
-              to="/colecciones"
+              to="/colecciones/sakura-set"
               className="sm:col-span-3 group relative rounded-3xl overflow-hidden bg-gradient-to-r from-pink-100 via-purple-50 to-pink-50 flex items-center justify-between px-8 py-6 shadow-soft hover:shadow-hover transition-all duration-500 hover:-translate-y-1 min-h-[100px]"
             >
               <div>

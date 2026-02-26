@@ -1,10 +1,10 @@
-import { createContext, useContext, useState, ReactNode, useCallback } from "react";
+import { createContext, useContext, useState, ReactNode, useCallback, useEffect } from "react";
 
 export interface CartItem {
   id: string;
   name: string;
-  price: number;          // precio original
-  discountedPrice?: number; // precio con descuento (ej: de coleccion)
+  price: number;
+  discountedPrice?: number;
   quantity: number;
   image: string;
   color: string;
@@ -25,8 +25,19 @@ interface CartContextType {
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export const CartProvider = ({ children }: { children: ReactNode }) => {
-  const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [cartItems, setCartItems] = useState<CartItem[]>(() => {
+    try {
+      const saved = localStorage.getItem("kiki_cart");
+      return saved ? JSON.parse(saved) : [];
+    } catch { return []; }
+  });
+
   const [justAdded, setJustAdded] = useState(false);
+
+  // Persistir carrito en localStorage cada vez que cambia
+  useEffect(() => {
+    localStorage.setItem("kiki_cart", JSON.stringify(cartItems));
+  }, [cartItems]);
 
   const triggerAnimation = useCallback(() => {
     setJustAdded(true);
@@ -37,6 +48,16 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     setCartItems((prev) => {
       const existing = prev.find((i) => i.id === item.id);
       if (existing) {
+        if (existing.discountedPrice) {
+          const totalUnits = existing.quantity + 1;
+          const totalValue = (existing.discountedPrice * existing.quantity) + item.price;
+          const avgPrice = Math.round(totalValue / totalUnits);
+          return prev.map((i) =>
+            i.id === item.id
+              ? { ...i, quantity: totalUnits, discountedPrice: avgPrice }
+              : i
+          );
+        }
         return prev.map((i) =>
           i.id === item.id ? { ...i, quantity: i.quantity + 1 } : i
         );
@@ -60,7 +81,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
           updated[idx] = {
             ...updated[idx],
             quantity: updated[idx].quantity + 1,
-            discountedPrice, // actualiza el precio con descuento
+            discountedPrice,
           };
         } else {
           updated.push({ ...item, discountedPrice, quantity: 1 });
@@ -86,7 +107,6 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
 
   const totalItems = cartItems.reduce((acc, i) => acc + i.quantity, 0);
 
-  // subtotal usa discountedPrice si existe, sino price
   const subtotal = cartItems.reduce(
     (acc, i) => acc + (i.discountedPrice ?? i.price) * i.quantity,
     0

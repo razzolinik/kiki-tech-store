@@ -5,12 +5,13 @@ import ProductCard from "@/components/ProductCard";
 import { Button } from "@/components/ui/button";
 import { Heart, ArrowRight } from "lucide-react";
 import { useAuth } from "@/context/authContext";
-import { allProducts } from "@/data/productsData";
+import { useProducts } from "@/hooks/useProducts";
 
 const Favoritos = () => {
   const { isLoggedIn, favorites, user } = useAuth();
+  const { products } = useProducts();
 
-  const favoriteProducts = allProducts.filter((p) => favorites.includes(p.id));
+  const favoriteProducts = products.filter((p) => favorites.includes(p.id));
 
   if (!isLoggedIn) {
     return (
@@ -48,7 +49,13 @@ const Favoritos = () => {
           <div className="container">
             <div className="flex items-center gap-4">
               {user?.picture && (
-                <img src={user.picture} alt={user.name} className="h-12 w-12 rounded-full border-2 border-primary/30" referrerPolicy="no-referrer" crossOrigin="anonymous" />
+                <img
+                  src={user.picture}
+                  alt={user.name}
+                  className="h-12 w-12 rounded-full border-2 border-primary/30"
+                  referrerPolicy="no-referrer"
+                  crossOrigin="anonymous"
+                />
               )}
               <div>
                 <h1 className="text-3xl md:text-4xl font-display font-bold text-foreground">

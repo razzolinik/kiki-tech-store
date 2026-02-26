@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, ReactNode, useCallback } from "react";
+import { createContext, useContext, useState, ReactNode, useCallback, useEffect } from "react";
 
 export interface GoogleUser {
   id: string;
@@ -12,28 +12,66 @@ interface AuthContextType {
   isLoggedIn: boolean;
   login: (user: GoogleUser) => void;
   logout: () => void;
-  favorites: string[];           // array de product IDs
+  favorites: string[];
   toggleFavorite: (id: string) => void;
   isFavorite: (id: string) => boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+const getFavoritesKey = (userId: string) => `kiki_favorites_${userId}`;
+
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<GoogleUser | null>(null);
-  const [favorites, setFavorites] = useState<string[]>([]);
+  const [user, setUser] = useState<GoogleUser | null>(() => {
+    try {
+      const saved = localStorage.getItem("kiki_user");
+      return saved ? JSON.parse(saved) : null;
+    } catch { return null; }
+  });
+
+  const [favorites, setFavorites] = useState<string[]>(() => {
+    try {
+      const saved = localStorage.getItem("kiki_user");
+      const savedUser = saved ? JSON.parse(saved) : null;
+      if (!savedUser) return [];
+      const favs = localStorage.getItem(getFavoritesKey(savedUser.id));
+      return favs ? JSON.parse(favs) : [];
+    } catch { return []; }
+  });
+
+  // Persistir usuario
+  useEffect(() => {
+    if (user) {
+      localStorage.setItem("kiki_user", JSON.stringify(user));
+    } else {
+      localStorage.removeItem("kiki_user");
+    }
+  }, [user]);
+
+  // Persistir favoritos por usuario
+  useEffect(() => {
+    if (user) {
+      localStorage.setItem(getFavoritesKey(user.id), JSON.stringify(favorites));
+    }
+  }, [favorites, user]);
 
   const login = useCallback((googleUser: GoogleUser) => {
     setUser(googleUser);
+    try {
+      const favs = localStorage.getItem(getFavoritesKey(googleUser.id));
+      setFavorites(favs ? JSON.parse(favs) : []);
+    } catch {
+      setFavorites([]);
+    }
   }, []);
 
   const logout = useCallback(() => {
     setUser(null);
-    setFavorites([]); // limpiar favoritos al cerrar sesión
+    setFavorites([]);
   }, []);
 
   const toggleFavorite = useCallback((id: string) => {
-    if (!user) return; // solo si está logueado
+    if (!user) return;
     setFavorites((prev) =>
       prev.includes(id) ? prev.filter((f) => f !== id) : [...prev, id]
     );
