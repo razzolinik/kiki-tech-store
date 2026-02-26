@@ -18,6 +18,7 @@ import Coleccion from "./pages/Coleccion";
 import Favoritos from "./pages/Favoritos";
 import NotFound from "./pages/NotFound";
 import Perfil from "./pages/Perfil";
+import About from "./pages/About";
 
 const queryClient = new QueryClient();
 
@@ -43,7 +44,7 @@ const App = () => (
                 <Route path="/colecciones/:id" element={<Coleccion />} />
                 <Route path="/perfil" element={<Perfil />} />
                 <Route path="/favoritos" element={<Favoritos />} />
-
+                <Route path="/about" element={<About />} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>

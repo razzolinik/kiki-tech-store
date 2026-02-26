@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { useGoogleLogin } from "@react-oauth/google";
-import { User, LogOut, Heart, ChevronDown, IdCard, Phone, MapPin } from "lucide-react";
+import { User, LogOut, Heart, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/authContext";
 import { Link } from "react-router-dom";
@@ -53,6 +53,7 @@ const UserMenu = ({ onOpenLogin }: UserMenuProps) => {
   const { user, isLoggedIn, logout, profileData } = useAuth();
   const [open, setOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) setOpen(false);
@@ -62,7 +63,10 @@ const UserMenu = ({ onOpenLogin }: UserMenuProps) => {
   }, []);
 
   if (isLoggedIn && user) {
-    const displayName = profileData ? `${profileData.firstName} ${profileData.lastName}`.trim() : user.name;
+    const displayName = profileData?.firstName
+      ? `${profileData.firstName} ${profileData.lastName}`.trim()
+      : user.name;
+
     return (
       <div className="relative" ref={menuRef}>
         <button onClick={() => setOpen(!open)} className="flex items-center gap-2 rounded-full hover:bg-muted transition-colors px-2 py-1">
@@ -70,7 +74,8 @@ const UserMenu = ({ onOpenLogin }: UserMenuProps) => {
           <ChevronDown className={`h-3 w-3 text-muted-foreground transition-transform ${open ? "rotate-180" : ""}`} />
         </button>
         {open && (
-          <div className="absolute right-0 top-full mt-2 w-64 bg-card rounded-2xl shadow-hover border border-border overflow-hidden animate-scale-in z-50">
+          <div className="absolute right-0 top-full mt-2 w-56 bg-card rounded-2xl shadow-hover border border-border overflow-hidden animate-scale-in z-50">
+            {/* Header */}
             <div className="px-4 py-3 border-b border-border">
               <div className="flex items-center gap-3">
                 <img src={user.picture} alt={displayName} className="h-9 w-9 rounded-full object-cover border-2 border-primary/20 shrink-0" referrerPolicy="no-referrer" crossOrigin="anonymous" />
@@ -80,35 +85,16 @@ const UserMenu = ({ onOpenLogin }: UserMenuProps) => {
                 </div>
               </div>
             </div>
-            {profileData && (profileData.dni || profileData.phone || profileData.city) && (
-              <div className="px-4 py-3 border-b border-border space-y-1.5">
-                <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Mis datos</p>
-                {profileData.dni && (
-                  <div className="flex items-center gap-2 text-xs text-foreground">
-                    <IdCard className="h-3.5 w-3.5 text-primary shrink-0" /><span>DNI {profileData.dni}</span>
-                  </div>
-                )}
-                {profileData.phone && (
-                  <div className="flex items-center gap-2 text-xs text-foreground">
-                    <Phone className="h-3.5 w-3.5 text-primary shrink-0" /><span>{profileData.phone}</span>
-                  </div>
-                )}
-                {profileData.city && profileData.province && (
-                  <div className="flex items-center gap-2 text-xs text-foreground">
-                    <MapPin className="h-3.5 w-3.5 text-primary shrink-0" /><span className="line-clamp-1">{profileData.city}, {profileData.province}</span>
-                  </div>
-                )}
-              </div>
-            )}
+            {/* Links */}
             <div className="py-1">
               <Link to="/perfil" onClick={() => setOpen(false)} className="flex items-center gap-2 px-4 py-2.5 text-sm text-foreground hover:bg-muted transition-colors">
-                <User className="h-4 w-4 text-primary" />Mi perfil
+                <User className="h-4 w-4 text-primary" /> Mi perfil
               </Link>
               <Link to="/favoritos" onClick={() => setOpen(false)} className="flex items-center gap-2 px-4 py-2.5 text-sm text-foreground hover:bg-muted transition-colors">
-                <Heart className="h-4 w-4 text-primary" />Mis favoritos
+                <Heart className="h-4 w-4 text-primary" /> Mis favoritos
               </Link>
               <button onClick={() => { logout(); setOpen(false); }} className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-colors">
-                <LogOut className="h-4 w-4" />Cerrar sesión
+                <LogOut className="h-4 w-4" /> Cerrar sesión
               </button>
             </div>
           </div>

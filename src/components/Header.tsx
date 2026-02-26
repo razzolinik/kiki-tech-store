@@ -3,7 +3,7 @@ import { Search, ShoppingBag, Heart, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import logo from "@/assets/logo_kiki.png";
-import { useCart } from "@/context/CartContext";
+import { useCart } from "@/context/cartContext";
 import { useAuth } from "@/context/authContext";
 import { cn } from "@/lib/utils";
 import SearchModal from "@/components/SearchModal";
@@ -19,8 +19,9 @@ const Header = () => {
   const navLinks = [
     { label: "Inicio", href: "/" },
     { label: "Tienda", href: "/tienda" },
-    { label: "Novedades", href: "/tienda?filter=new" },
     { label: "Colecciones", href: "/colecciones" },
+    { label: "Sobre kiki", href: "/about" },
+
   ];
 
   return (

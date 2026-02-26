@@ -5,12 +5,11 @@ import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import {
   ArrowRight, ArrowLeft, MapPin, User, CreditCard,
-  Package, CheckCircle, Lock, Home, Building2, Loader2
+  Package, CheckCircle, Lock, Home, Building2, Loader2, Sparkles, X
 } from "lucide-react";
 import { useCart } from "@/context/cartContext";
 import { useAuth } from "@/context/authContext";
 import { cn } from "@/lib/utils";
-
 
 const SERVER_URL = import.meta.env.VITE_SERVER_URL || "http://localhost:3001";
 const FREE_SHIPPING_THRESHOLD = 70000;
@@ -56,44 +55,70 @@ const CARRIER_INFO: Record<Carrier, { name: string; days: Record<DeliveryType, s
   },
 };
 
+const EMPTY_FORM: FormData = {
+  firstName: "",
+  lastName: "",
+  dni: "",
+  phone: "",
+  province: "",
+  city: "",
+  address: "",
+  postalCode: "",
+  floor: "",
+  carrier: "correo-argentino",
+  deliveryType: "domicilio",
+};
+
 const Checkout = () => {
   const { cartItems, subtotal, clearCart } = useCart();
-  const { isLoggedIn, user, updateProfileData, profileData } = useAuth();
+  const { isLoggedIn, user, profileData, updateProfileData } = useAuth();
+
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [errors, setErrors] = useState<Partial<Record<keyof FormData, string>>>({});
   const [loadingMP, setLoadingMP] = useState(false);
   const [mpError, setMpError] = useState("");
+  const [autofillBanner, setAutofillBanner] = useState(false);
+  const [saveToProfile, setSaveToProfile] = useState(true);
 
-  const [form, setForm] = useState<FormData>({
+  // Build initial form merging profileData over defaults
+  const buildInitialForm = (): FormData => ({
     firstName: profileData?.firstName || user?.name?.split(" ")[0] || "",
-    lastName: profileData?.lastName || user?.name?.split(" ").slice(1).join(" ") || "",
-    dni: profileData?.dni || "",
-    phone: profileData?.phone || "",
-    province: profileData?.province || "",
-    city: profileData?.city || "",
-    address: profileData?.address || "",
+    lastName:  profileData?.lastName  || user?.name?.split(" ").slice(1).join(" ") || "",
+    dni:       profileData?.dni       || "",
+    phone:     profileData?.phone     || "",
+    province:  profileData?.province  || "",
+    city:      profileData?.city      || "",
+    address:   profileData?.address   || "",
     postalCode: profileData?.postalCode || "",
-    floor: "",
-    carrier: "correo-argentino",
+    floor:     "",
+    carrier:   "correo-argentino",
     deliveryType: "domicilio",
   });
 
-  // Sincronizar el form si profileData llega después del montaje (ej: desde localStorage)
+  const [form, setForm] = useState<FormData>(buildInitialForm);
+
+  // Show autofill banner once if profileData is present and has useful data
   useEffect(() => {
-    if (profileData) {
-      setForm((prev) => ({
-        ...prev,
-        firstName: profileData.firstName || prev.firstName,
-        lastName: profileData.lastName || prev.lastName,
-        dni: profileData.dni || prev.dni,
-        phone: profileData.phone || prev.phone,
-        province: profileData.province || prev.province,
-        city: profileData.city || prev.city,
-        address: profileData.address || prev.address,
-        postalCode: profileData.postalCode || prev.postalCode,
-      }));
+    if (profileData?.firstName && profileData?.city) {
+      setAutofillBanner(true);
     }
   }, [profileData]);
+
+  const applyProfileAutofill = () => {
+    setForm((prev) => ({
+      ...prev,
+      firstName:  profileData?.firstName  || prev.firstName,
+      lastName:   profileData?.lastName   || prev.lastName,
+      dni:        profileData?.dni        || prev.dni,
+      phone:      profileData?.phone      || prev.phone,
+      province:   profileData?.province   || prev.province,
+      city:       profileData?.city       || prev.city,
+      address:    profileData?.address    || prev.address,
+      postalCode: profileData?.postalCode || prev.postalCode,
+    }));
+    setErrors({});
+    setAutofillBanner(false);
+  };
 
   const freeShipping = subtotal >= FREE_SHIPPING_THRESHOLD;
   const shippingCost = freeShipping ? 0 : SHIPPING_COSTS[form.carrier][form.deliveryType];
@@ -135,6 +160,20 @@ const Checkout = () => {
   };
 
   const handleConfirm = async () => {
+    // Persist form data back to profile if user opted in
+    if (saveToProfile) {
+      updateProfileData({
+        firstName:  form.firstName,
+        lastName:   form.lastName,
+        dni:        form.dni,
+        phone:      form.phone,
+        province:   form.province,
+        city:       form.city,
+        address:    form.deliveryType === "domicilio" ? form.address : profileData?.address || "",
+        postalCode: form.deliveryType === "domicilio" ? form.postalCode : profileData?.postalCode || "",
+      });
+    }
+
     setLoadingMP(true);
     setMpError("");
     try {
@@ -177,17 +216,6 @@ const Checkout = () => {
       if (!url) throw new Error("No se recibió URL de pago");
 
       clearCart();
-      // Guardar datos del perfil para el próximo checkout
-      updateProfileData({
-        firstName: form.firstName,
-        lastName: form.lastName,
-        dni: form.dni,
-        phone: form.phone,
-        province: form.province,
-        city: form.city,
-        address: form.address,
-        postalCode: form.postalCode,
-      });
       window.location.href = url;
     } catch (err) {
       console.error(err);
@@ -299,6 +327,38 @@ const Checkout = () => {
           <div className="grid lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2">
               <div className="bg-card rounded-2xl p-6 shadow-soft">
+
+                {/* ── Autofill Banner ── */}
+                {autofillBanner && step <= 2 && (
+                  <div className="mb-5 flex items-center gap-3 rounded-xl bg-pink-50 border border-primary/20 p-4 animate-scale-in">
+                    <Sparkles className="h-5 w-5 text-primary shrink-0" />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold text-foreground">
+                        Tenés datos guardados en tu perfil
+                      </p>
+                      <p className="text-xs text-muted-foreground mt-0.5">
+                        {profileData?.firstName} {profileData?.lastName}
+                        {profileData?.city ? ` · ${profileData.city}` : ""}
+                      </p>
+                    </div>
+                    <div className="flex gap-2 shrink-0">
+                      <Button
+                        variant="bubble"
+                        size="sm"
+                        className="text-xs px-3 py-1.5 h-auto"
+                        onClick={applyProfileAutofill}
+                      >
+                        Usar datos
+                      </Button>
+                      <button
+                        onClick={() => setAutofillBanner(false)}
+                        className="text-muted-foreground hover:text-foreground transition-colors"
+                      >
+                        <X className="h-4 w-4" />
+                      </button>
+                    </div>
+                  </div>
+                )}
 
                 {/* Step 1 */}
                 {step === 1 && (
@@ -467,7 +527,7 @@ const Checkout = () => {
                       {form.deliveryType === "domicilio" && (
                         <SummaryRow label="Dirección" value={`${form.address}${form.floor ? ` – ${form.floor}` : ""}, CP ${form.postalCode}`} />
                       )}
-                      <SummaryRow label="Transportista" value={CARRIER_INFO[form.carrier].name} />
+                      <SummaryRow label="Transportista" value={freeShipping ? "—" : CARRIER_INFO[form.carrier].name} />
                       <SummaryRow label="Costo de envío" value={freeShipping ? "Sin costo 🎉" : `$${shippingCost.toLocaleString()}`} />
                     </div>
 
@@ -490,14 +550,28 @@ const Checkout = () => {
                       </div>
                     </div>
 
+                    {/* Save to profile toggle */}
+                    <label className="flex items-center gap-3 cursor-pointer select-none group">
+                      <div
+                        onClick={() => setSaveToProfile((v) => !v)}
+                        className={cn(
+                          "w-10 h-6 rounded-full transition-colors duration-200 relative shrink-0",
+                          saveToProfile ? "bg-primary" : "bg-border"
+                        )}
+                      >
+                        <span className={cn(
+                          "absolute top-1 w-4 h-4 rounded-full bg-white shadow transition-all duration-200",
+                          saveToProfile ? "left-5" : "left-1"
+                        )} />
+                      </div>
+                      <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors">
+                        Guardar mis datos en el perfil para la próxima compra
+                      </span>
+                    </label>
+
                     {mpError && (
                       <p className="text-xs text-red-500 bg-red-50 rounded-lg p-3">{mpError}</p>
                     )}
-
-                    <div className="flex items-center gap-2 bg-muted rounded-xl p-3 text-xs text-muted-foreground">
-                      <span>🔒</span>
-                      <span>Este es un checkout de demostración. No se realizará ningún cobro real.</span>
-                    </div>
                   </div>
                 )}
 
