@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -10,6 +10,7 @@ import {
 import { useCart } from "@/context/cartContext";
 import { useAuth } from "@/context/authContext";
 import { cn } from "@/lib/utils";
+
 
 const SERVER_URL = import.meta.env.VITE_SERVER_URL || "http://localhost:3001";
 const FREE_SHIPPING_THRESHOLD = 70000;
@@ -57,25 +58,42 @@ const CARRIER_INFO: Record<Carrier, { name: string; days: Record<DeliveryType, s
 
 const Checkout = () => {
   const { cartItems, subtotal, clearCart } = useCart();
-  const { isLoggedIn, user } = useAuth();
+  const { isLoggedIn, user, updateProfileData, profileData } = useAuth();
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [errors, setErrors] = useState<Partial<Record<keyof FormData, string>>>({});
   const [loadingMP, setLoadingMP] = useState(false);
   const [mpError, setMpError] = useState("");
 
   const [form, setForm] = useState<FormData>({
-    firstName: user?.name?.split(" ")[0] ?? "",
-    lastName: user?.name?.split(" ").slice(1).join(" ") ?? "",
-    dni: "",
-    phone: "",
-    province: "",
-    city: "",
-    address: "",
-    postalCode: "",
+    firstName: profileData?.firstName || user?.name?.split(" ")[0] || "",
+    lastName: profileData?.lastName || user?.name?.split(" ").slice(1).join(" ") || "",
+    dni: profileData?.dni || "",
+    phone: profileData?.phone || "",
+    province: profileData?.province || "",
+    city: profileData?.city || "",
+    address: profileData?.address || "",
+    postalCode: profileData?.postalCode || "",
     floor: "",
     carrier: "correo-argentino",
     deliveryType: "domicilio",
   });
+
+  // Sincronizar el form si profileData llega después del montaje (ej: desde localStorage)
+  useEffect(() => {
+    if (profileData) {
+      setForm((prev) => ({
+        ...prev,
+        firstName: profileData.firstName || prev.firstName,
+        lastName: profileData.lastName || prev.lastName,
+        dni: profileData.dni || prev.dni,
+        phone: profileData.phone || prev.phone,
+        province: profileData.province || prev.province,
+        city: profileData.city || prev.city,
+        address: profileData.address || prev.address,
+        postalCode: profileData.postalCode || prev.postalCode,
+      }));
+    }
+  }, [profileData]);
 
   const freeShipping = subtotal >= FREE_SHIPPING_THRESHOLD;
   const shippingCost = freeShipping ? 0 : SHIPPING_COSTS[form.carrier][form.deliveryType];
@@ -159,6 +177,17 @@ const Checkout = () => {
       if (!url) throw new Error("No se recibió URL de pago");
 
       clearCart();
+      // Guardar datos del perfil para el próximo checkout
+      updateProfileData({
+        firstName: form.firstName,
+        lastName: form.lastName,
+        dni: form.dni,
+        phone: form.phone,
+        province: form.province,
+        city: form.city,
+        address: form.address,
+        postalCode: form.postalCode,
+      });
       window.location.href = url;
     } catch (err) {
       console.error(err);
@@ -464,6 +493,11 @@ const Checkout = () => {
                     {mpError && (
                       <p className="text-xs text-red-500 bg-red-50 rounded-lg p-3">{mpError}</p>
                     )}
+
+                    <div className="flex items-center gap-2 bg-muted rounded-xl p-3 text-xs text-muted-foreground">
+                      <span>🔒</span>
+                      <span>Este es un checkout de demostración. No se realizará ningún cobro real.</span>
+                    </div>
                   </div>
                 )}
 

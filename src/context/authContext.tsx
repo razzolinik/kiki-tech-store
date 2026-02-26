@@ -1,10 +1,21 @@
-import { createContext, useContext, useState, ReactNode, useCallback, useEffect } from "react";
+import { createContext, useContext, useState, ReactNode, useCallback } from "react";
 
 export interface GoogleUser {
   id: string;
   name: string;
   email: string;
   picture: string;
+}
+
+export interface ProfileData {
+  firstName: string;
+  lastName: string;
+  dni: string;
+  phone: string;
+  province: string;
+  city: string;
+  address: string;
+  postalCode: string;
 }
 
 interface AuthContextType {
@@ -15,69 +26,74 @@ interface AuthContextType {
   favorites: string[];
   toggleFavorite: (id: string) => void;
   isFavorite: (id: string) => boolean;
+  profileData: ProfileData | null;
+  updateProfileData: (data: ProfileData) => void;
 }
 
+// ── Helpers localStorage ──────────────────────────────────────────────────────
+function loadFromStorage<T>(key: string): T | null {
+  try {
+    const raw = localStorage.getItem(key);
+    return raw ? (JSON.parse(raw) as T) : null;
+  } catch {
+    return null;
+  }
+}
+
+function saveToStorage(key: string, value: unknown) {
+  try {
+    localStorage.setItem(key, JSON.stringify(value));
+  } catch {}
+}
+
+function removeFromStorage(key: string) {
+  try {
+    localStorage.removeItem(key);
+  } catch {}
+}
+
+const STORAGE_USER      = "kiki_user";
+const STORAGE_FAVORITES = "kiki_favorites";
+const STORAGE_PROFILE   = "kiki_profile";
+
+// ── Contexto ──────────────────────────────────────────────────────────────────
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-const getFavoritesKey = (userId: string) => `kiki_favorites_${userId}`;
-
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<GoogleUser | null>(() => {
-    try {
-      const saved = localStorage.getItem("kiki_user");
-      return saved ? JSON.parse(saved) : null;
-    } catch { return null; }
-  });
-
-  const [favorites, setFavorites] = useState<string[]>(() => {
-    try {
-      const saved = localStorage.getItem("kiki_user");
-      const savedUser = saved ? JSON.parse(saved) : null;
-      if (!savedUser) return [];
-      const favs = localStorage.getItem(getFavoritesKey(savedUser.id));
-      return favs ? JSON.parse(favs) : [];
-    } catch { return []; }
-  });
-
-  // Persistir usuario
-  useEffect(() => {
-    if (user) {
-      localStorage.setItem("kiki_user", JSON.stringify(user));
-    } else {
-      localStorage.removeItem("kiki_user");
-    }
-  }, [user]);
-
-  // Persistir favoritos por usuario
-  useEffect(() => {
-    if (user) {
-      localStorage.setItem(getFavoritesKey(user.id), JSON.stringify(favorites));
-    }
-  }, [favorites, user]);
+  // Inicializar desde localStorage en vez de null/vacío
+  const [user,        setUser]        = useState<GoogleUser | null>(() => loadFromStorage<GoogleUser>(STORAGE_USER));
+  const [favorites,   setFavorites]   = useState<string[]>(() => loadFromStorage<string[]>(STORAGE_FAVORITES) ?? []);
+  const [profileData, setProfileData] = useState<ProfileData | null>(() => loadFromStorage<ProfileData>(STORAGE_PROFILE));
 
   const login = useCallback((googleUser: GoogleUser) => {
     setUser(googleUser);
-    try {
-      const favs = localStorage.getItem(getFavoritesKey(googleUser.id));
-      setFavorites(favs ? JSON.parse(favs) : []);
-    } catch {
-      setFavorites([]);
-    }
+    saveToStorage(STORAGE_USER, googleUser);
   }, []);
 
   const logout = useCallback(() => {
     setUser(null);
     setFavorites([]);
+    setProfileData(null);
+    removeFromStorage(STORAGE_USER);
+    removeFromStorage(STORAGE_FAVORITES);
+    removeFromStorage(STORAGE_PROFILE);
   }, []);
 
   const toggleFavorite = useCallback((id: string) => {
     if (!user) return;
-    setFavorites((prev) =>
-      prev.includes(id) ? prev.filter((f) => f !== id) : [...prev, id]
-    );
+    setFavorites((prev) => {
+      const next = prev.includes(id) ? prev.filter((f) => f !== id) : [...prev, id];
+      saveToStorage(STORAGE_FAVORITES, next);
+      return next;
+    });
   }, [user]);
 
   const isFavorite = useCallback((id: string) => favorites.includes(id), [favorites]);
+
+  const updateProfileData = useCallback((data: ProfileData) => {
+    setProfileData(data);
+    saveToStorage(STORAGE_PROFILE, data);
+  }, []);
 
   return (
     <AuthContext.Provider value={{
@@ -88,6 +104,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       favorites,
       toggleFavorite,
       isFavorite,
+      profileData,
+      updateProfileData,
     }}>
       {children}
     </AuthContext.Provider>

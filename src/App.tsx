@@ -7,16 +7,17 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 import { CartProvider } from "./context/cartContext";
 import { AuthProvider } from "./context/authContext";
 import ScrollToTop from "./components/ScrollToTop";
-import Perfil from "./pages/Perfil";
 
 import Index from "./pages/Index";
 import Tienda from "./pages/Tienda";
 import Producto from "./pages/Producto";
 import Carrito from "./pages/Carrito";
+import Checkout from "./pages/Checkout";
 import Colecciones from "./pages/Colecciones";
 import Coleccion from "./pages/Coleccion";
 import Favoritos from "./pages/Favoritos";
 import NotFound from "./pages/NotFound";
+import Perfil from "./pages/Perfil";
 
 const queryClient = new QueryClient();
 
@@ -37,10 +38,12 @@ const App = () => (
                 <Route path="/tienda" element={<Tienda />} />
                 <Route path="/producto/:id" element={<Producto />} />
                 <Route path="/carrito" element={<Carrito />} />
+                <Route path="/checkout" element={<Checkout />} />
                 <Route path="/colecciones" element={<Colecciones />} />
                 <Route path="/colecciones/:id" element={<Coleccion />} />
-                <Route path="/favoritos" element={<Favoritos />} />
                 <Route path="/perfil" element={<Perfil />} />
+                <Route path="/favoritos" element={<Favoritos />} />
+
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>
