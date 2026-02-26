@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { Search, X } from "lucide-react";
-import { allProducts } from "@/data/productsData";
+import { useProducts } from "@/hooks/useProducts";
 import { cn } from "@/lib/utils";
 
 interface SearchModalProps {
@@ -12,6 +12,7 @@ interface SearchModalProps {
 const SearchModal = ({ open, onClose }: SearchModalProps) => {
   const [query, setQuery] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
+  const { products } = useProducts();
 
   useEffect(() => {
     if (open) {
@@ -24,7 +25,6 @@ const SearchModal = ({ open, onClose }: SearchModalProps) => {
     return () => { document.body.style.overflow = ""; };
   }, [open]);
 
-  // Cerrar con Escape
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
@@ -34,7 +34,7 @@ const SearchModal = ({ open, onClose }: SearchModalProps) => {
   }, [onClose]);
 
   const results = query.trim().length >= 2
-    ? allProducts.filter((p) =>
+    ? products.filter((p) =>
         p.name.toLowerCase().includes(query.toLowerCase()) ||
         p.category.toLowerCase().includes(query.toLowerCase())
       ).slice(0, 6)
