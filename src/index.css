@@ -4,6 +4,28 @@
 @tailwind components;
 @tailwind utilities;
 
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* Page transition fade-in al montar */
+@keyframes page-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+main {
+  animation: page-fade-in 0.35s ease-out both;
+}
+
+
 @layer base {
   :root {
     --background: 350 100% 98%;

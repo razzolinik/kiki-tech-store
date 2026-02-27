@@ -47,7 +47,7 @@ const Colecciones = () => {
             </h1>
             <p className="text-muted-foreground max-w-md mx-auto">
               Setups pensados de principio a fin. Cada coleccion combina productos que se ven
-              increibles juntos.
+              increibles juntos y con un increíble descuento al adquirirlos juntos.
             </p>
           </div>
         </section>
