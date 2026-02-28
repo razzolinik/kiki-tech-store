@@ -59,6 +59,7 @@ app.post("/create_preference", async (req, res) => {
         failure: `${process.env.FRONTEND_URL}/pago/failure`,
         pending: `${process.env.FRONTEND_URL}/pago/pending`,
       },
+      auto_return: "approved",
       ...(payer?.email && {
         payer: { email: payer.email },
       }),
