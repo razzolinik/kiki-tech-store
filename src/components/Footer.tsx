@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Instagram, Twitter, Heart, Linkedin } from "lucide-react";
+import { Heart, Linkedin, Github } from "lucide-react";
 import logo from "@/assets/logo_kiki.png";
 
 const Footer = () => {
@@ -11,16 +11,14 @@ const Footer = () => {
       { label: "En oferta", href: "/tienda?filter=sale" },
     ],
     categorias: [
+      { label: "Colecciones", href: "/colecciones" },
       { label: "Mousepads", href: "/tienda?category=mousepads" },
       { label: "Keycaps", href: "/tienda?category=keycaps" },
-      { label: "Iluminacion RGB", href: "/tienda?category=rgb" },
       { label: "Accesorios", href: "/tienda?category=accesorios" },
     ],
-    ayuda: [
-      { label: "FAQ", href: "/faq" },
-      { label: "Envios", href: "/envios" },
-      { label: "Cambios y devoluciones", href: "/devoluciones" },
-      { label: "Contacto", href: "/contacto" },
+    cuenta: [
+      { label: "Favoritos", href: "/favoritos" },
+      { label: "Carrito", href: "/carrito" },
     ],
   };
 
@@ -38,12 +36,12 @@ const Footer = () => {
             </p>
             <div className="flex gap-3">
               <a
-                href="https://instagram.com"
+                href="https://github.com/razzolinik"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="h-10 w-10 rounded-full bg-card flex items-center justify-center text-muted-foreground hover:text-primary hover:shadow-soft transition-all duration-300"
               >
-                <Instagram className="h-5 w-5" />
+                <Github className="h-5 w-5" />
               </a>
               <a
                 href="https://linkedin.com/in/razzolinik"
@@ -90,9 +88,9 @@ const Footer = () => {
           </div>
 
           <div>
-            <h4 className="font-display font-semibold text-foreground mb-4">Ayuda</h4>
+            <h4 className="font-display font-semibold text-foreground mb-4">Mi cuenta</h4>
             <ul className="space-y-2">
-              {footerLinks.ayuda.map((link) => (
+              {footerLinks.cuenta.map((link) => (
                 <li key={link.label}>
                   <Link
                     to={link.href}
@@ -108,9 +106,9 @@ const Footer = () => {
 
         {/* Bottom */}
         <div className="mt-12 pt-8 border-t border-border flex flex-col md:flex-row items-center justify-between gap-4">
-            <p className="text-sm text-muted-foreground">
-              Kiki. &copy; {new Date().getFullYear()} Todos los derechos reservados.
-            </p>
+          <p className="text-sm text-muted-foreground">
+            Kiki. &copy; {new Date().getFullYear()} Todos los derechos reservados.
+          </p>
           <p className="text-sm text-muted-foreground flex items-center gap-1">
             Gracias por estar <Heart className="h-4 w-4 text-primary fill-primary" />
           </p>

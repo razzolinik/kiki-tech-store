@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -27,7 +27,43 @@ const Tienda = () => {
   const [gridCols, setGridCols] = useState<2 | 4>(4);
   const [showFilters, setShowFilters] = useState(false);
 
+  const activeFilter = searchParams.get("filter"); // "new" | "sale" | "bestseller" | null
+
   const { products, loading, error } = useProducts(selectedCategory);
+
+  // Aplicar el filtro de ?filter= sobre los productos que devuelve el hook
+  const filteredProducts = useMemo(() => {
+    if (!products) return [];
+
+    if (activeFilter === "new") {
+      return products.filter((p) => p.tags?.includes("new"));
+    }
+    if (activeFilter === "sale") {
+      return products.filter((p) => p.tags?.includes("sale"));
+    }
+    if (activeFilter === "bestseller") {
+      return [...products].sort((a, b) => (b.reviews ?? 0) - (a.reviews ?? 0));
+    }
+
+    return products;
+  }, [products, activeFilter]);
+
+  // Título y descripción dinámicos según el filtro activo
+  const pageTitle = activeFilter === "new"
+    ? "Novedades"
+    : activeFilter === "sale"
+    ? "En oferta"
+    : activeFilter === "bestseller"
+    ? "Más vendidos"
+    : "Tienda";
+
+  const pageDescription = activeFilter === "new"
+    ? "Los últimos productos que llegaron a Kiki."
+    : activeFilter === "sale"
+    ? "Productos con descuento por tiempo limitado."
+    : activeFilter === "bestseller"
+    ? "Los favoritos de nuestra comunidad."
+    : "Todo nuestro catalogo en un solo lugar. Filtra por categoria y encuentra lo tuyo.";
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -36,11 +72,10 @@ const Tienda = () => {
         <section className="bg-gradient-hero py-12 md:py-16">
           <div className="container text-center">
             <h1 className="text-3xl md:text-5xl font-display font-bold text-foreground mb-4">
-              Tienda
+              {pageTitle}
             </h1>
             <p className="text-muted-foreground max-w-md mx-auto">
-              Todo nuestro catalogo en un solo lugar. Filtra por categoria y
-              encuentra lo tuyo.
+              {pageDescription}
             </p>
           </div>
         </section>
@@ -131,19 +166,19 @@ const Tienda = () => {
           {!loading && !error && (
             <>
               <p className="text-sm text-muted-foreground mb-6">
-                {products.length} producto{products.length !== 1 ? "s" : ""}
+                {filteredProducts.length} producto{filteredProducts.length !== 1 ? "s" : ""}
               </p>
               <div className={`grid gap-6 ${
                 gridCols === 2
                   ? "grid-cols-2"
                   : "grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
               }`}>
-                {products.map((product) => (
+                {filteredProducts.map((product) => (
                   <ProductCard key={product.id} product={product} />
                 ))}
               </div>
 
-              {products.length === 0 && (
+              {filteredProducts.length === 0 && (
                 <div className="text-center py-20">
                   <p className="text-5xl mb-4">🌸</p>
                   <p className="text-muted-foreground">No hay productos en esta categoría.</p>
