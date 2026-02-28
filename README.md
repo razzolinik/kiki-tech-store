@@ -10,7 +10,7 @@ Kiki es un proyecto de aprendizaje personal con el objetivo de construir un e-co
 
 La idea fue ir más allá de un CRUD básico: integrar autenticación con OAuth real, manejar estado global sin librerías externas, conectar una base de datos en la nube y cerrar el ciclo con una pasarela de pagos funcional. La temática de periféricos con identidad visual propia fue una decisión intencional para darle coherencia de producto al proyecto.
 
----
+---  
 
 ## 🛠️ Tecnologías utilizadas
 
