@@ -4,7 +4,7 @@ import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { CheckCircle, ArrowRight } from "lucide-react";
 import { useEffect } from "react";
-import { useCart } from "@/context/CartContext";
+import { useCart } from "@/context/cartContext";
 
 const PagoSuccess = () => {
   const [searchParams] = useSearchParams();

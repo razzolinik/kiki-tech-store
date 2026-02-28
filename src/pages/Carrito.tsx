@@ -44,7 +44,7 @@ const Carrito = () => {
       const data = await res.json();
 
       // En pruebas usar sandbox_init_point, en producción init_point
-      const url = data.init_point || data.sandbox_init_point;
+      const url = data.sandbox_init_point || data.init_point;
       if (!url) throw new Error("No se recibió URL de pago");
 
       // Redirigir a MercadoPago

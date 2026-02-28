@@ -6,7 +6,7 @@ import ProductCard from "@/components/ProductCard";
 import { Button } from "@/components/ui/button";
 import { Heart, ShoppingBag, Minus, Plus, Star, ChevronLeft, Truck, Shield, RotateCcw } from "lucide-react";
 import { useProduct, useProducts } from "@/hooks/useProducts";
-import { useCart } from "@/context/CartContext";
+import { useCart } from "@/context/cartContext";
 
 const Producto = () => {
   const { id } = useParams();

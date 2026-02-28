@@ -1,127 +1,93 @@
-# 💻 Kiki --- Tech Accessories E-commerce
+# 🐱 Kiki Tech Store
 
-Kiki is an e-commerce project focused on technology accessories,
-developed as a practical exercise to strengthen web development and
-ecommerce integration skills.
+E-commerce de tech gamer con estética adorable.
 
-The project combines technology and design in a curated online store
-experience.
+---
 
-------------------------------------------------------------------------
+## 🎯 Propósito del proyecto
 
-## ✨ Concept
+Kiki es un proyecto de aprendizaje personal con el objetivo de construir un e-commerce funcional de punta a punta, tomando decisiones técnicas reales en cada capa de la aplicación.
 
-Kiki is designed as a modern tech accessories brand with a clear
-identity.
-The focus goes beyond visuals and explores the integration between:
+La idea fue ir más allá de un CRUD básico: integrar autenticación con OAuth real, manejar estado global sin librerías externas, conectar una base de datos en la nube y cerrar el ciclo con una pasarela de pagos funcional. La temática de periféricos con identidad visual propia fue una decisión intencional para darle coherencia de producto al proyecto.
 
--   Interface design
--   User experience
--   Ecommerce architecture
--   Payment gateway integration
--   Product presentation
+---
 
-The aesthetic is soft and contemporary, while the positioning remains
-professional and intentional.
+## 🛠️ Tecnologías utilizadas
 
-------------------------------------------------------------------------
+**Frontend**
+- React 18 + TypeScript con Vite
+- React Router v6 para ruteo con rutas dinámicas
+- Tailwind CSS + shadcn/ui para estilos y componentes
+- Context API para estado global (carrito y autenticación)
+- `@react-oauth/google` para login con Google OAuth 2.0
 
-## 🎯 Project Goals
+**Backend**
+- Node.js + Express
+- Mongoose para modelado y conexión con MongoDB Atlas
+- MongoDB Atlas como base de datos en la nube (productos y colecciones)
+- Script de seed para poblar la base de datos inicialmente
+- MercadoPago SDK v2 — Checkout Pro
+- Variables de entorno con dotenv, CORS configurado por entorno
+- DNS configurado explícitamente vía `dns.setServers` para garantizar conectividad en Railway
 
--   Practice frontend development for ecommerce
--   Build a scalable store architecture
--   Implement Mercado Pago API integration
--   Develop a cohesive visual identity
--   Refine brand voice and ecommerce copy
--   Generate realistic AI-based product placeholders
+**Infraestructura**
+- Frontend: Vercel
+- Backend: Railway (root directory apuntando a `/server`)
+- Base de datos: MongoDB Atlas (cluster en la nube)
 
-------------------------------------------------------------------------
+**Imágenes**
+- Generación Gemini Nano Banana Pro
 
-## 🛍️ Features
+---
 
--   Home page with hero section
--   Featured products section
--   Product categories
--   Product cards including:
-    -   Image
-    -   Price
-    -   Variants
-    -   Labels (New, Limited, Offers)
--   Shopping cart
--   Cart item counter
--   Structured footer
--   Responsive design
+## 🔧 Cómo se trabajó
 
-------------------------------------------------------------------------
+El proyecto se desarrolló de forma incremental, empezando por la estructura visual y avanzando hacia las capas de lógica y servicios externos.
 
-## 🧩 Technologies Used
+Primero se construyó el catálogo con datos estáticos para definir la estructura de productos y colecciones. Luego se modelaron los schemas con Mongoose, se configuró la conexión a MongoDB Atlas y se creó un script de seed (`seed.js`) para poblar la base de datos. El backend de Express sirve los productos y colecciones directamente desde la base de datos.
 
--   React
--   Node.js
--   Typescript
--   Tailwind
--   Mercado Pago API (integration in progress)
--   Google OAUTH para Log-In de usuario
--   AI-generated product images
+En paralelo se implementó la autenticación con Google OAuth 2.0 y el carrito con Context API. El último bloque fue la integración con MercadoPago Checkout Pro: creación de preferencias desde el backend, manejo de las tres respuestas posibles (éxito, fallo, pendiente) y validación del flujo completo en modo sandbox con cuentas de prueba separadas.
 
-------------------------------------------------------------------------
+---
 
-## 🎨 Design Approach
+## ✅ Funcionalidades implementadas
 
-The design prioritizes:
+- Catálogo con 15 productos en MongoDB Atlas, filtrado por categoría y grilla ajustable
+- Páginas de detalle con productos relacionados
+- Sistema de colecciones curadas con descuento automático del 13%
+- Carrito con estado global, cálculo de envío y feedback visual
+- Login con Google, favoritos por usuario
+- Checkout con MercadoPago Checkout Pro — probado y funcional en sandbox
+- Páginas de resultado de pago (éxito, fallo, pendiente)
+- Búsqueda de productos por nombre o descripción aprovechando los índices de texto nativos de MongoDB.
 
--   Minimalism
--   Clean spacing
--   Soft color palette
--   Clear typographic hierarchy
--   Reusable components
--   Visual consistency
+---
 
-The goal was to avoid an overly decorative or childish aesthetic,
-focusing instead on a curated and contemporary brand feel.
+## 🚀 Próximos pasos y espacios de mejora
 
-------------------------------------------------------------------------
+**Guardar transacciones en la base de datos**
+Hoy los pagos se confirman a través del redirect de MercadoPago pero no se persiste ningún registro en MongoDB. El paso siguiente sería implementar webhooks (IPN) para escuchar confirmaciones del lado del servidor y guardar cada pedido con su estado, items y datos del comprador.
 
-## 💳 Payment Integration
+**Usuarios en la base de datos**
+La sesión de Google se almacena solo en memoria del cliente. Guardar el perfil del usuario en MongoDB permitiría mantener favoritos, historial de compras y datos de envío entre sesiones.
 
-The project includes planned integration with Mercado Pago API for:
+**Integración con el Correo Argentino**
+Conectar la API del Correo Argentino para calcular costos de envío en tiempo real según el código postal del comprador y generar el seguimiento del paquete una vez despachado.
 
--   Payment preference creation
--   Secure checkout redirection
--   Payment status handling
--   Post-payment confirmation
+**Notificaciones por email**
+Enviar una confirmación automática al comprador tras el pago usando un servicio como Resend o SendGrid, con el detalle de los productos y el número de operación.
 
-This integration is part of the technical learning process for
-real-world ecommerce systems.
+**Panel de administración**
+Agregar, editar o desactivar productos directamente desde una interfaz, sin necesidad de modificar el seed ni la base de datos manualmente.
 
-------------------------------------------------------------------------
+**Persistencia del carrito**
+Actualmente el carrito se pierde al recargar. Guardarlo en `localStorage` o asociarlo al usuario en MongoDB mejoraría considerablemente la experiencia.
 
-## 📌 Project Status
 
-Currently in active development.
+---
 
-Focus areas:
+## 👩‍💻 Autora
 
--   Copy refinement
--   Visual improvements
--   Realistic product imagery
--   Backend preparation
+**razzolini khiara as kiki** · [LinkedIn](https://linkedin.com/in/razzolinik) · [GitHub](https://github.com/razzolinik)
 
-------------------------------------------------------------------------
-
-## 🚀 Next Steps
-
--   Full backend implementation
--   Database integration
--   Complete Mercado Pago integration
--   Performance optimization
--   User authentication
--   Wishlist functionality
-
-------------------------------------------------------------------------
-
-## 👩🏻‍💻 Author
-
-Developed by Khiara Razzolini
-Programming student focused on backend development and system
-architecture.
+*Tecnología con un toque cute para quienes valoran el detalle ♡*

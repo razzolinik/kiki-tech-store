@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Heart, ShoppingBag, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useCart } from "@/context/CartContext";
+import { useCart } from "@/context/cartContext";
 import { useAuth } from "@/context/authContext";
 
 export interface Product {
